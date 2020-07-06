@@ -5,33 +5,43 @@ const express = require('express');
 const app = require('express')();
 const path = require('path');
 
+var mainComponent = 'http://purrgetmainitemdisplay.us-east-2.elasticbeanstalk.com/',
+    aboutComponent = 'http://purrgetaboutthisitem-dev.us-east-1.elasticbeanstalk.com/',
+    searchComponent = 'http://v50-dev.us-east-1.elasticbeanstalk.com/',
+    reviewsComponent = 'http://service-dev2.us-west-2.elasticbeanstalk.com/',
+    reccommended = 'http://rec-feat-display.us-east-2.elasticbeanstalk.com/'
+;
+
+app.all('/reccomended*', (req, res) => {
+    console.log('redirecting to reccomended server');
+    apiProxy.web(req, res, {target: reccommended})
+  });
+ 
+app.all("/main*", function(req, res) {
+    console.log('redirecting to main server');
+    apiProxy.web(req, res, {target: mainComponent});
+});
+
+app.all("/about*", function(req, res) {
+    console.log('redirecting to about server');
+    apiProxy.web(req, res, {target: aboutComponent});
+});
+
+app.all("/search*", function(req, res) {
+    console.log('redirecting to search server');
+    apiProxy.web(req, res, {target: searchComponent});
+});
+
+app.get("/reviews*", function(req, res) {
+  console.log('redirecting to reviews server');
+  apiProxy.web(req, res, {target: reviewsComponent});
+});
+
 
 app.use(express());
 app.use(express.static(path.join(__dirname, '/proxy/public')));
 
-var mainComponent = 'http://purrgetmainitemdisplay-env.eba-upicdvwk.us-east-2.elasticbeanstalk.com',
-    aboutComponent = 'http://localhost:5100',
-    searchComponent = 'http://localhost:5300',
-    reviewsComponent = 'http://localhost:5500';
- 
-app.get("/main*", function(req, res) {
-    console.log('redirecting to Server1');
-    apiProxy.web(req, res, {target: mainComponent});
-});
 
-app.get("/about*", function(req, res) {
-    console.log('redirecting to Server2');
-    apiProxy.web(req, res, {target: aboutComponent});
+app.listen(PORT, () => {
+    console.log(`listening on port: ${PORT}`)
 });
-
-app.get("/api/search/:catName*", function(req, res) {
-    console.log('redirecting to Server3');
-    apiProxy.web(req, res, {target: searchComponent});
-});
-
-app.get("/Purrget*", function(req, res) {
-  console.log('redirecting to Server3');
-  apiProxy.web(req, res, {target: reviewsComponent});
-});
-
-app.listen(PORT);
